@@ -1,0 +1,18 @@
+services:
+  web:            # development: docker compose up
+    build: { context: ., target: dev }
+    ports: ["5173:5173"]
+    volumes:
+      - .:/app
+      - /app/node_modules   # keep container's node_modules, not the host's
+    env_file: [{ path: .env, required: false }]
+
+  prod:           # production preview: docker compose --profile prod up --build prod
+    profiles: ["prod"]
+    build:
+      context: .
+      target: prod
+      args:
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL:-}
+        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY:-}
+    ports: ["8080:80"]
